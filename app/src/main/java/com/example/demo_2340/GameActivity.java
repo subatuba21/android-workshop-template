@@ -80,10 +80,34 @@ public class GameActivity extends AppCompatActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         // TODO logic to move the player (remember to check collisions)
+        if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+            if (playerY - 10 >= 0) {
+                playerY -= 10;
+            }
+        } else if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+            if (playerY + 10 <= screenHeight) {
+                playerY += 10;
+            }
+
+        } else if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+            if (playerX - 10 <= screenWidth) {
+                playerX -= 10;
+            }
+        } else if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
+            if (playerX + 10 <= screenWidth) {
+                playerX += 10;
+            }
+        }
+        playerView.updatePosition(playerX, playerY);
+        checkCollisions();
+        return true;
     }
 
     private void initializeDots() {
-        // TODO Create and add dots with random positions
+        for(int i = 0; i < 20; i++) {
+            Dot dot = new Dot(random.nextFloat() * screenWidth, random.nextFloat() * screenHeight, 20);
+            dots.add(dot);
+        }
     }
 
     /*
@@ -100,11 +124,21 @@ public class GameActivity extends AppCompatActivity {
     // Maintains 20 dots on screen
     private void respawnDotsIfNeeded() {
         // TODO: if dots drop below 20, respawn dots
+        if (dots.size() < 20) {
+            while (dots.size() < 20) {
+                respawnDot();
+            }
+        }
     }
 
     // Recreates the dots. Respawn mechanic
     private void respawnDot() {
         //TODO: randomly spawn a dot (need to make both UI and background class)
+        Dot dot = new Dot(random.nextFloat() * screenWidth, random.nextFloat() * screenHeight, 20);
+        dots.add(dot);
+        DotView dotV = new DotView(this, dot);
+        gameLayout.addView(dotV);
+        dotViewMap.put(dot, dotV);
     }
 
     /*
@@ -124,7 +158,9 @@ public class GameActivity extends AppCompatActivity {
                     launchGameWinActivity();
                 }
             } else if (dot.isExpired()) { // TODO: Checks if dots have expired.
-                
+                dots.remove(i);
+                gameLayout.removeView(dotViewMap.get(dot));
+                dot.setInvisible();
             }
         }
     }

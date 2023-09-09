@@ -16,11 +16,15 @@ public class Dot {
         this.isVisible = true;
 
         // TODO Record the time when the dot becomes visible
-
+        this.visibleStartTime = System.currentTimeMillis();
     }
 
     public boolean isExpired() {
         // TODO Check if the dot has exceeded its max lifetime
+        if (System.currentTimeMillis() - visibleStartTime > MAX_LIFETIME) {
+            return true;
+        }
+        return false;
     }
 
     public float getX() {
